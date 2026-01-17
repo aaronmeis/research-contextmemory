@@ -5,64 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Periodic Table</title>
   <meta name="description" content="An interactive periodic table organizing AI concepts by abstraction level and functional family">
-  <meta name="keywords" content="AI, artificial intelligence, machine learning, LLM, RAG, agents, periodic table">
   
-  <!-- Open Graph / Social -->
-  <meta property="og:title" content="AI Periodic Table">
-  <meta property="og:description" content="An interactive periodic table organizing AI concepts by abstraction level and functional family">
-  <meta property="og:type" content="website">
-  
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   
-  <!-- React -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    html, body, #root {
-      height: 100%;
-      width: 100%;
-    }
-    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body, #root { height: 100%; width: 100%; }
     body {
-      font-family: 'Space Grotesk', 'Segoe UI', system-ui, sans-serif;
+      font-family: 'Space Grotesk', sans-serif;
       background: #0f0f1a;
+      color: white;
       overflow-x: hidden;
     }
-    
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: #1a1a2e;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: #4a4a6a;
-      border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: #5a5a7a;
-    }
-    
     @keyframes gradientShift {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
+    a { color: #00d4ff; text-decoration: none; transition: opacity 0.2s; }
+    a:hover { opacity: 0.8; text-decoration: underline; }
   </style>
 </head>
 <body>
@@ -72,579 +39,103 @@
     const { useState, Fragment } = React;
 
     const elements = [
-      // Row 1: Primitives
-      { symbol: 'Pr', name: 'Prompt', number: 1, row: 1, group: 1, 
-        description: 'Instructions given to an AI. Reactive because changing one word changes the output.',
-        example: '"Write an email about..."' },
-      { symbol: 'Em', name: 'Embeddings', number: 2, row: 1, group: 2,
-        description: 'Numerical representations of meaning used for search and memory. Text becomes lists of numbers where similar meanings get similar numbers.',
-        example: '"king" - "man" + "woman" ≈ "queen"' },
-      { symbol: 'Lg', name: 'Large Language Model', number: 3, row: 1, group: 5,
-        description: 'The "noble gases" of AI - stable, foundational capabilities around which everything else reacts.',
-        example: 'GPT-4, Claude, Granite' },
-      
-      // Row 2: Compositions
-      { symbol: 'Fc', name: 'Function Calling', number: 4, row: 2, group: 1,
-        description: 'The model invokes APIs before answering. Still reactive but involves calling external tools.',
-        example: 'get_weather(), search_database()' },
-      { symbol: 'Vx', name: 'Vector Database', number: 5, row: 2, group: 2,
-        description: 'Data stores optimized for semantic search. Store and query millions of embeddings.',
-        example: 'Pinecone, Weaviate, Chroma' },
-      { symbol: 'Rg', name: 'RAG', number: 6, row: 2, group: 3,
-        description: 'Retrieval Augmented Generation - orchestrates embeddings, vector stores, and models to retrieve context before generating.',
-        example: 'Q&A over documents' },
-      { symbol: 'Gr', name: 'Guardrails', number: 7, row: 2, group: 4,
-        description: 'Runtime safety filters and schema validation. Ensures AI outputs are safe and properly formatted.',
-        example: 'PII filtering, output schemas' },
-      { symbol: 'Mm', name: 'Multi-modal', number: 8, row: 2, group: 5,
-        description: 'Models processing images, audio, and video in addition to text.',
-        example: 'GPT-4V, Gemini Pro Vision' },
-      
-      // Row 3: Deployment
-      { symbol: 'Ag', name: 'Agents', number: 9, row: 3, group: 1,
-        description: 'Think-Act-Observe loops. The AI plans, takes action using tools, and observes results until goal is met.',
-        example: 'AutoGPT, Claude Computer Use' },
-      { symbol: 'Ft', name: 'Fine Tuning', number: 10, row: 3, group: 2,
-        description: 'Adapting a base model with domain-specific training data. Bakes memory into model parameters.',
-        example: 'LoRA, RLHF, DPO' },
-      { symbol: 'Fw', name: 'Framework', number: 11, row: 3, group: 3,
-        description: 'Platforms that tie everything together to build and deploy AI systems.',
-        example: 'LangChain, LlamaIndex' },
-      { symbol: 'Rt', name: 'Red Teaming', number: 12, row: 3, group: 4,
-        description: 'Adversarial testing designed to break the AI through jailbreaks and prompt injection.',
-        example: 'Security audits, stress testing' },
-      { symbol: 'Sm', name: 'Small Models', number: 13, row: 3, group: 5,
-        description: 'Distilled, specialized models that are fast, cheap, and can run on edge devices.',
-        example: 'Phi-3, Gemma, Llama 3.2' },
-      
-      // Row 4: Emerging
-      { symbol: 'Ma', name: 'Multi-agent', number: 14, row: 4, group: 1,
-        description: 'Multiple AIs working together - debating, collaborating, and specializing on complex problems.',
-        example: 'CrewAI, AutoGen swarms' },
-      { symbol: 'Sy', name: 'Synthetic Data', number: 15, row: 4, group: 2,
-        description: 'Using AI to generate training data for other AI systems. Solution to real-world data limits.',
-        example: 'Textbooks Are All You Need' },
-      { symbol: 'In', name: 'Interpretability', number: 16, row: 4, group: 4,
-        description: 'Understanding WHY a model acts as it does. Peering inside the black box to find responsible neurons.',
-        example: 'Mechanistic interpretability' },
-      { symbol: 'Th', name: 'Thinking Models', number: 17, row: 4, group: 5,
-        description: 'Models with chain-of-thought built into architecture, spending time reasoning before answering.',
-        example: 'o1, o3, DeepSeek R1' },
+      { symbol: 'Pr', name: 'Prompt', number: 1, row: 1, group: 1, description: 'Instructions given to an AI. Reactive because changing one word changes the output.', example: '"Write an email about..."' },
+      { symbol: 'Em', name: 'Embeddings', number: 2, row: 1, group: 2, description: 'Numerical representations of meaning used for search and memory.', example: '"king" - "man" + "woman" ≈ "queen"' },
+      { symbol: 'Lg', name: 'LLM', number: 3, row: 1, group: 5, description: 'The "noble gases" of AI - stable, foundational capabilities.', example: 'GPT-4, Claude, Granite' },
+      { symbol: 'Fc', name: 'Function Calling', number: 4, row: 2, group: 1, description: 'The model invokes APIs before answering.', example: 'get_weather()' },
+      { symbol: 'Vx', name: 'Vector DB', number: 5, row: 2, group: 2, description: 'Data stores optimized for semantic search.', example: 'Pinecone, Weaviate' },
+      { symbol: 'Rg', name: 'RAG', number: 6, row: 2, group: 3, description: 'Retrieval Augmented Generation - orchestrates context retrieval.', example: 'Q&A over documents' },
+      { symbol: 'Gr', name: 'Guardrails', number: 7, row: 2, group: 4, description: 'Runtime safety filters and schema validation.', example: 'PII filtering' },
+      { symbol: 'Mm', name: 'Multi-modal', number: 8, row: 2, group: 5, description: 'Models processing images, audio, and video.', example: 'GPT-4V, Gemini' },
+      { symbol: 'Ag', name: 'Agents', number: 9, row: 3, group: 1, description: 'Think-Act-Observe loops that use tools.', example: 'AutoGPT' },
+      { symbol: 'Ft', name: 'Fine Tuning', number: 10, row: 3, group: 2, description: 'Adapting models with specific training data.', example: 'LoRA, RLHF' },
+      { symbol: 'Fw', name: 'Framework', number: 11, row: 3, group: 3, description: 'Platforms that tie everything together.', example: 'LangChain, LlamaIndex' },
+      { symbol: 'Rt', name: 'Red Teaming', number: 12, row: 3, group: 4, description: 'Adversarial testing to break the AI.', example: 'Security audits' },
+      { symbol: 'Sm', name: 'Small Models', number: 13, row: 3, group: 5, description: 'Distilled, fast models for edge devices.', example: 'Phi-3, Gemma' },
+      { symbol: 'Ma', name: 'Multi-agent', number: 14, row: 4, group: 1, description: 'Multiple AIs collaborating on problems.', example: 'CrewAI, AutoGen' },
+      { symbol: 'Sy', name: 'Synthetic Data', number: 15, row: 4, group: 2, description: 'Using AI to generate training data.', example: 'Textbooks Are All You Need' },
+      { symbol: 'In', name: 'Interpretability', number: 16, row: 4, group: 4, description: 'Understanding WHY a model acts as it does.', example: 'Mechanistic interpretability' },
+      { symbol: 'Th', name: 'Thinking Models', number: 17, row: 4, group: 5, description: 'Models with built-in reasoning steps.', example: 'o1, DeepSeek R1' },
     ];
 
     const groups = [
-      { id: 1, name: 'Reactive', description: 'Action-oriented elements that respond to inputs' },
-      { id: 2, name: 'Retrieval', description: 'Elements for storing and finding information' },
-      { id: 3, name: 'Orchestration', description: 'Elements that coordinate multiple components' },
-      { id: 4, name: 'Validation', description: 'Elements for safety and testing' },
-      { id: 5, name: 'Models', description: 'Core AI capabilities and architectures' },
+      { id: 1, name: 'Reactive' }, { id: 2, name: 'Retrieval' }, { id: 3, name: 'Orchestration' }, { id: 4, name: 'Validation' }, { id: 5, name: 'Models' }
     ];
 
     const rows = [
-      { id: 1, name: 'Primitives', description: 'Fundamental building blocks that cannot be broken down' },
-      { id: 2, name: 'Compositions', description: 'Elements created by combining primitives' },
-      { id: 3, name: 'Deployment', description: 'Production-focused elements for real-world use' },
-      { id: 4, name: 'Emerging', description: 'Frontier technologies rapidly evolving' },
+      { id: 1, name: 'Primitives' }, { id: 2, name: 'Compositions' }, { id: 3, name: 'Deployment' }, { id: 4, name: 'Emerging' }
     ];
 
     const rowColors = {
-      1: { shades: ['#00d4ff', '#33ddff', '#66e6ff', '#99efff', '#ccf7ff'], glow: '#00d4ff', name: 'Primitives' },
-      2: { shades: ['#8b5cf6', '#a78bfa', '#c4b5fd', '#ddd6fe', '#ede9fe'], glow: '#8b5cf6', name: 'Compositions' },
-      3: { shades: ['#ec4899', '#f472b6', '#f9a8d4', '#fbcfe8', '#fce7f3'], glow: '#ec4899', name: 'Deployment' },
-      4: { shades: ['#10b981', '#34d399', '#6ee7b7', '#a7f3d0', '#d1fae5'], glow: '#10b981', name: 'Emerging' },
-    };
-
-    const getElementColor = (element) => {
-      const rowConfig = rowColors[element.row];
-      const shadeIndex = Math.min(element.group - 1, rowConfig.shades.length - 1);
-      return rowConfig.shades[shadeIndex];
-    };
-
-    const getTextColor = (bgColor) => {
-      const hex = bgColor.replace('#', '');
-      const r = parseInt(hex.substr(0, 2), 16);
-      const g = parseInt(hex.substr(2, 2), 16);
-      const b = parseInt(hex.substr(4, 2), 16);
-      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-      return luminance > 0.6 ? '#0f172a' : '#ffffff';
+      1: { shades: ['#00d4ff', '#33ddff', '#66e6ff'], glow: '#00d4ff', name: 'Primitives' },
+      2: { shades: ['#8b5cf6', '#a78bfa', '#c4b5fd'], glow: '#8b5cf6', name: 'Compositions' },
+      3: { shades: ['#ec4899', '#f472b6', '#f9a8d4'], glow: '#ec4899', name: 'Deployment' },
+      4: { shades: ['#10b981', '#34d399', '#6ee7b7'], glow: '#10b981', name: 'Emerging' },
     };
 
     const ElementCard = ({ element, isSelected, onClick }) => {
-      const bgColor = getElementColor(element);
-      const textColor = getTextColor(bgColor);
-      const rowConfig = rowColors[element.row];
-      
+      const bgColor = rowColors[element.row].shades[0];
       return (
-        <div
-          onClick={() => onClick(element)}
-          style={{
-            backgroundColor: bgColor,
-            color: textColor,
-            width: '100%',
-            aspectRatio: '1.8',
-            borderRadius: '8px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-            transform: isSelected ? 'scale(1.08)' : 'scale(1)',
-            zIndex: isSelected ? 10 : 1,
-            boxShadow: isSelected 
-              ? `0 0 40px ${rowConfig.glow}99, 0 0 80px ${rowConfig.glow}44, inset 0 0 20px rgba(255,255,255,0.2)`
-              : `0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)`,
-            position: 'relative',
-            border: isSelected ? '2px solid rgba(255,255,255,0.8)' : '1px solid rgba(255,255,255,0.1)',
-            overflow: 'hidden',
-          }}
-        >
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            height: '50%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%)',
-            borderRadius: '8px 8px 0 0',
-            pointerEvents: 'none'
-          }} />
-          
-          <span style={{ 
-            fontSize: '8px', 
-            opacity: 0.7,
-            fontWeight: 600,
-            position: 'absolute',
-            top: '3px',
-            left: '5px',
-            fontFamily: 'monospace'
-          }}>
-            {element.number}
-          </span>
-          <span style={{ 
-            fontSize: 'clamp(18px, 2.5vw, 24px)', 
-            fontWeight: 800,
-            letterSpacing: '-0.5px',
-            lineHeight: 1,
-            textShadow: isSelected ? '0 2px 10px rgba(0,0,0,0.3)' : 'none'
-          }}>
-            {element.symbol}
-          </span>
-          <span style={{ 
-            fontSize: 'clamp(6px, 0.9vw, 8px)', 
-            opacity: 0.85,
-            marginTop: '1px',
-            fontWeight: 500,
-            letterSpacing: '0.3px',
-            maxWidth: '90%',
-            textAlign: 'center',
-          }}>
-            {element.name}
-          </span>
-        </div>
-      );
-    };
-
-    const EmptyCell = ({ row, group }) => {
-      const rowConfig = rowColors[row];
-      return (
-        <div style={{
-          width: '100%',
-          aspectRatio: '1.8',
-          borderRadius: '8px',
-          border: `2px dashed ${rowConfig.shades[group - 1]}44`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          opacity: 0.3
+        <div onClick={() => onClick(element)} style={{
+          backgroundColor: bgColor, color: '#0f172a', width: '100%', aspectRatio: '1.4',
+          borderRadius: '8px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          cursor: 'pointer', transition: 'all 0.3s', transform: isSelected ? 'scale(1.1)' : 'scale(1)',
+          boxShadow: isSelected ? `0 0 30px ${rowColors[element.row].glow}` : 'none',
+          border: isSelected ? '2px solid white' : '1px solid rgba(255,255,255,0.1)'
         }}>
-          <span style={{ 
-            color: rowConfig.shades[0], 
-            fontSize: '16px',
-            fontWeight: 300
-          }}>?</span>
+          <span style={{ fontSize: '10px', position: 'absolute', top: '5px', left: '5px' }}>{element.number}</span>
+          <strong style={{ fontSize: '22px' }}>{element.symbol}</strong>
+          <span style={{ fontSize: '9px', textAlign: 'center' }}>{element.name}</span>
         </div>
       );
     };
 
     function AIPeriodicTable() {
-      const [selectedElement, setSelectedElement] = useState(null);
-      const [showReactions, setShowReactions] = useState(false);
-
-      const getElement = (row, group) => {
-        return elements.find(e => e.row === row && e.group === group);
-      };
+      const [selected, setSelected] = useState(null);
 
       return (
-        <div style={{
-          minHeight: '100vh',
-          background: 'linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 40%, #0d1117 100%)',
-          padding: '16px',
-          fontFamily: '"Space Grotesk", "Segoe UI", system-ui, sans-serif',
-          overflow: 'auto',
-          position: 'relative'
-        }}>
-          {/* Background Grid */}
-          <div style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundImage: `
-              linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px',
-            pointerEvents: 'none'
-          }} />
-
-          {/* Title */}
-          <div style={{ textAlign: 'center', marginBottom: '20px', position: 'relative', zIndex: 1 }}>
-            <div style={{
-              display: 'inline-block',
-              padding: '6px 20px',
-              background: 'rgba(255,255,255,0.05)',
-              borderRadius: '100px',
-              marginBottom: '10px',
-              border: '1px solid rgba(255,255,255,0.1)'
-            }}>
-              <span style={{ 
-                color: '#888', 
-                fontSize: '11px', 
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-                fontWeight: 500
-              }}>
-                The Complete Guide to
-              </span>
-            </div>
-            <h1 style={{
-              fontSize: 'clamp(28px, 5vw, 48px)',
-              fontWeight: 700,
-              background: 'linear-gradient(135deg, #00d4ff, #8b5cf6, #ec4899, #10b981)',
-              backgroundSize: '300% 300%',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              animation: 'gradientShift 8s ease infinite',
-              letterSpacing: '-2px',
-              margin: '0 0 8px 0',
-              lineHeight: 1.1
-            }}>
+        <div style={{ padding: '40px 20px', maxWidth: '1000px', margin: '0 auto' }}>
+          <header style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h1 style={{ fontSize: '3rem', animation: 'gradientShift 5s infinite', background: 'linear-gradient(90deg, #00d4ff, #8b5cf6, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               AI Periodic Table
             </h1>
-            <p style={{ 
-              color: '#666', 
-              fontSize: '14px',
-              maxWidth: '500px',
-              margin: '0 auto',
-              lineHeight: 1.4
-            }}>
-              Organizing AI concepts by abstraction level and functional family
-            </p>
-          </div>
+            <p style={{ color: '#888' }}>Organizing AI concepts by abstraction level and functional family</p>
+          </header>
 
-          {/* Group Headers */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '90px repeat(5, 1fr)',
-            gap: '6px',
-            maxWidth: '900px',
-            margin: '0 auto 6px',
-            position: 'relative',
-            zIndex: 1
-          }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '100px repeat(5, 1fr)', gap: '10px' }}>
             <div />
-            {groups.map(group => (
-              <div key={group.id} style={{ textAlign: 'center', padding: '4px' }}>
-                <div style={{ color: '#fff', fontSize: '12px', fontWeight: 600, letterSpacing: '0.5px' }}>
-                  {group.name}
-                </div>
-                <div style={{ color: '#666', fontSize: '10px', marginTop: '1px' }}>
-                  G{group.id}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Main Grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: '90px repeat(5, 1fr)',
-            gap: '6px',
-            maxWidth: '900px',
-            margin: '0 auto',
-            position: 'relative',
-            zIndex: 1
-          }}>
+            {groups.map(g => <div key={g.id} style={{ textAlign: 'center', fontSize: '12px', color: '#888' }}>{g.name}</div>)}
+            
             {rows.map(row => (
               <Fragment key={row.id}>
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  padding: '4px 8px',
-                  borderRight: `2px solid ${rowColors[row.id].shades[0]}33`
-                }}>
-                  <div style={{ 
-                    color: rowColors[row.id].shades[0], 
-                    fontSize: '12px', 
-                    fontWeight: 700,
-                    letterSpacing: '0.5px'
-                  }}>
-                    {row.name}
-                  </div>
-                  <div style={{ color: '#888', fontSize: '10px', marginTop: '2px', lineHeight: 1.2 }}>
-                    Row {row.id}
-                  </div>
-                </div>
-                
+                <div style={{ color: rowColors[row.id].shades[0], fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>{row.name}</div>
                 {[1, 2, 3, 4, 5].map(group => {
-                  const element = getElement(row.id, group);
-                  return (
-                    <div key={`${row.id}-${group}`}>
-                      {element ? (
-                        <ElementCard
-                          element={element}
-                          isSelected={selectedElement?.symbol === element.symbol}
-                          onClick={setSelectedElement}
-                        />
-                      ) : (
-                        <EmptyCell row={row.id} group={group} />
-                      )}
-                    </div>
-                  );
+                  const el = elements.find(e => e.row === row.id && e.group === group);
+                  return el ? <ElementCard key={el.number} element={el} isSelected={selected?.number === el.number} onClick={setSelected} /> : <div key={`${row.id}-${group}`} />;
                 })}
               </Fragment>
             ))}
           </div>
 
-          {/* Element Detail Panel */}
-          {selectedElement && (
-            <div style={{
-              position: 'fixed',
-              bottom: '24px',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              background: 'rgba(15, 15, 26, 0.95)',
-              backdropFilter: 'blur(20px)',
-              border: `1px solid ${rowColors[selectedElement.row].shades[0]}66`,
-              borderRadius: '20px',
-              padding: '24px 32px',
-              maxWidth: '600px',
-              width: 'calc(100% - 48px)',
-              zIndex: 100,
-              boxShadow: `0 -20px 60px ${rowColors[selectedElement.row].glow}22, 0 0 0 1px rgba(255,255,255,0.05)`
-            }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '20px' }}>
-                <div style={{
-                  width: '80px',
-                  height: '80px',
-                  borderRadius: '16px',
-                  background: getElementColor(selectedElement),
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                  boxShadow: `0 8px 32px ${rowColors[selectedElement.row].glow}44`
-                }}>
-                  <span style={{ 
-                    fontSize: '36px', 
-                    fontWeight: 800,
-                    color: getTextColor(getElementColor(selectedElement))
-                  }}>
-                    {selectedElement.symbol}
-                  </span>
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '24px', fontWeight: 700, color: '#fff' }}>
-                      {selectedElement.name}
-                    </span>
-                    <span style={{
-                      padding: '4px 10px',
-                      background: rowColors[selectedElement.row].shades[0] + '22',
-                      color: rowColors[selectedElement.row].shades[0],
-                      borderRadius: '100px',
-                      fontSize: '11px',
-                      fontWeight: 600
-                    }}>
-                      {rows[selectedElement.row - 1].name}
-                    </span>
-                  </div>
-                  <p style={{ color: '#aaa', fontSize: '14px', lineHeight: 1.6, margin: '0 0 12px 0' }}>
-                    {selectedElement.description}
-                  </p>
-                  <div style={{
-                    padding: '10px 14px',
-                    background: 'rgba(255,255,255,0.05)',
-                    borderRadius: '10px',
-                    fontFamily: '"JetBrains Mono", monospace',
-                    fontSize: '12px',
-                    color: rowColors[selectedElement.row].shades[0]
-                  }}>
-                    {selectedElement.example}
-                  </div>
-                </div>
-                <button
-                  onClick={() => setSelectedElement(null)}
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    background: 'rgba(255,255,255,0.05)',
-                    color: '#888',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '18px',
-                    flexShrink: 0
-                  }}
-                >
-                  ×
-                </button>
-              </div>
+          {selected && (
+            <div style={{ marginTop: '40px', padding: '20px', borderRadius: '15px', background: 'rgba(255,255,255,0.05)', border: `1px solid ${rowColors[selected.row].shades[0]}` }}>
+              <h2>{selected.name}</h2>
+              <p style={{ margin: '10px 0', color: '#ccc' }}>{selected.description}</p>
+              <code style={{ color: rowColors[selected.row].shades[0], background: '#000', padding: '5px 10px', borderRadius: '5px' }}>{selected.example}</code>
             </div>
           )}
 
-          {/* Reactions Section */}
-          <div style={{
-            maxWidth: '900px',
-            margin: '48px auto 0',
-            position: 'relative',
-            zIndex: 1
-          }}>
-            <button
-              onClick={() => setShowReactions(!showReactions)}
-              style={{
-                width: '100%',
-                padding: '16px 24px',
-                background: 'rgba(255,255,255,0.03)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                borderRadius: '16px',
-                color: '#fff',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                fontSize: '16px',
-                fontWeight: 600,
-                fontFamily: 'inherit'
-              }}
-            >
-              <span>⚗️ Common Reactions (Combinations)</span>
-              <span style={{ 
-                transform: showReactions ? 'rotate(180deg)' : 'rotate(0deg)',
-                transition: 'transform 0.3s'
-              }}>▼</span>
-            </button>
-            
-            {showReactions && (
-              <div style={{ marginTop: '16px', display: 'grid', gap: '16px' }}>
-                {/* RAG Reaction */}
-                <div style={{
-                  padding: '20px',
-                  background: 'rgba(139, 92, 246, 0.1)',
-                  border: '1px solid rgba(139, 92, 246, 0.3)',
-                  borderRadius: '16px'
-                }}>
-                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#8b5cf6', marginBottom: '12px' }}>
-                    Production RAG (Chatbot)
-                  </div>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    flexWrap: 'wrap',
-                    fontFamily: '"JetBrains Mono", monospace',
-                    fontSize: '14px'
-                  }}>
-                    <span style={{ padding: '6px 12px', background: '#00d4ff', color: '#0f172a', borderRadius: '8px', fontWeight: 600 }}>Em</span>
-                    <span style={{ color: '#666' }}>→</span>
-                    <span style={{ padding: '6px 12px', background: '#8b5cf6', color: '#fff', borderRadius: '8px', fontWeight: 600 }}>Vx</span>
-                    <span style={{ color: '#666' }}>→</span>
-                    <span style={{ padding: '6px 12px', background: '#c4b5fd', color: '#0f172a', borderRadius: '8px', fontWeight: 600 }}>Rg</span>
-                    <span style={{ color: '#666' }}>→</span>
-                    <span style={{ padding: '6px 12px', background: '#00d4ff', color: '#0f172a', borderRadius: '8px', fontWeight: 600 }}>Pr</span>
-                    <span style={{ color: '#666' }}>→</span>
-                    <span style={{ padding: '6px 12px', background: '#ccf7ff', color: '#0f172a', borderRadius: '8px', fontWeight: 600 }}>Lg</span>
-                    <span style={{ color: '#666' }}>+</span>
-                    <span style={{ padding: '6px 12px', background: '#ddd6fe', color: '#0f172a', borderRadius: '8px', fontWeight: 600 }}>Gr</span>
-                  </div>
-                </div>
-
-                {/* Agentic Loop */}
-                <div style={{
-                  padding: '20px',
-                  background: 'rgba(236, 72, 153, 0.1)',
-                  border: '1px solid rgba(236, 72, 153, 0.3)',
-                  borderRadius: '16px'
-                }}>
-                  <div style={{ fontSize: '14px', fontWeight: 600, color: '#ec4899', marginBottom: '12px' }}>
-                    The Agentic Loop
-                  </div>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    flexWrap: 'wrap',
-                    fontFamily: '"JetBrains Mono", monospace',
-                    fontSize: '14px'
-                  }}>
-                    <span style={{ padding: '6px 12px', background: '#ec4899', color: '#fff', borderRadius: '8px', fontWeight: 600 }}>Ag</span>
-                    <span style={{ color: '#666' }}>→</span>
-                    <span style={{ padding: '6px 12px', background: '#8b5cf6', color: '#fff', borderRadius: '8px', fontWeight: 600 }}>Fc</span>
-                    <span style={{ color: '#666' }}>→</span>
-                    <span style={{ padding: '6px 12px', background: '#f9a8d4', color: '#0f172a', borderRadius: '8px', fontWeight: 600 }}>Fw</span>
-                    <span style={{ color: '#666', marginLeft: '8px' }}>⟳ loop</span>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Legend */}
-          <div style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            gap: '24px',
-            marginTop: '48px',
-            padding: '20px',
-            position: 'relative',
-            zIndex: 1
-          }}>
-            {Object.entries(rowColors).map(([rowId, config]) => (
-              <div key={rowId} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '8px',
-                  background: `linear-gradient(135deg, ${config.shades[0]}, ${config.shades[2]})`,
-                  boxShadow: `0 4px 12px ${config.glow}44`
-                }} />
-                <div>
-                  <div style={{ color: '#fff', fontSize: '13px', fontWeight: 600 }}>{config.name}</div>
-                  <div style={{ color: '#666', fontSize: '11px' }}>Row {rowId}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Footer */}
-          <div style={{
-            textAlign: 'center',
-            marginTop: '48px',
-            padding: '24px',
-            borderTop: '1px solid rgba(255,255,255,0.05)',
-            position: 'relative',
-            zIndex: 1
-          }}>
-            <p>
-              Based on the AI Periodic Table concept • Click elements to learn more<br>
-                Inspired by Martin Keen's Excellent Video on youtube !
-             </p>
-          </div>
+          <footer style={{ marginTop: '60px', textAlign: 'center', borderTop: '1px solid #333', padding: '20px' }}>
+            <div style={{ padding: '20px', background: 'rgba(139, 92, 246, 0.1)', borderRadius: '12px', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
+              <h3 style={{ marginBottom: '10px' }}>Thank You!</h3>
+              <p style={{ fontSize: '15px', color: '#aaa', lineHeight: '1.6' }}>
+                This interactive periodic table was inspired by the brilliant work of <strong>Martin Keen</strong> at <strong>IBM Technology</strong>.<br />
+                Watch his full breakdown: <a href="https://www.youtube.com/watch?v=ESBMgZHzfG0" target="_blank" rel="noopener noreferrer">
+                  AI Periodic Table Explained: Mapping LLMs, RAG & AI Agent Frameworks
+                </a>
+              </p>
+            </div>
+          </footer>
         </div>
       );
     }
